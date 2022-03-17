@@ -10,10 +10,18 @@ module.exports = function (db) {
     res.json(todo);
   });
 
+  router.get("/:id", async function (req, res, next) {
+    const todo = await collection
+      .findOne({
+        _id: new ObjectId(req.params.id),
+      })
+      res.json(todo);
+  });
+
   router.post("/", async function (req, res, next) {
     const dataCreated = await collection.insertOne({
       title: req.body.title,
-      complete: false
+      complete: false,
     });
     const todo = await collection.findOne(dataCreated.insertedId);
     res.json(todo);
@@ -39,7 +47,7 @@ module.exports = function (db) {
 
   router.delete("/:id", async function (req, res, next) {
     const todo = await collection.findOneAndDelete({
-      _id: new ObjectId(req.params.id)
+      _id: new ObjectId(req.params.id),
     });
     res.json(todo.value);
   });

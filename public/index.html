@@ -19,6 +19,7 @@
       crossorigin="anonymous"
     ></script>
 
+
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
 
@@ -118,22 +119,13 @@
             <div class="modal-body">
               <div class="form-group">
                 <label for="editTitle" class="control-label">Title:</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="editTitle"
-                  name="editTitle"
-                />
+                <input type="text" class="form-control" id="editTitle" />
               </div>
               <div class="form-group">
                 <label for="editComplete" class="control-label"
                   >Complete:</label
                 >
-                <select
-                  class="form-control"
-                  id="editComplete"
-                  name="editComplete"
-                >
+                <select class="form-control" id="editComplete">
                   <option value="false">Not Done</option>
                   <option value="true">Done</option>
                 </select>
@@ -156,17 +148,16 @@
     <!--End Edit modal -->
 
     <button id="add-btn" class="btn btn-primary">Add</button>
-    <button id="edit-btn" class="btn btn-success">Edit</button>
 
     <script>
       $(document).ready(function () {
-        loadData();
-        setInterval(loadData, 1000);
+        loadData(); //show all data
+        // setInterval(loadData, 1000);
 
         $("#add-btn").click(function () {
+          //show formModal when clicking add button
           $("#formModal").modal("show");
         });
-
 
         $("#form-todo").submit(function (event) {
           event.preventDefault();
@@ -177,6 +168,16 @@
           });
           addData(params);
           $("#formModal").modal("hide");
+        });
+      });
+
+      $("#list").on("click", ".edit-btn", function () {
+        const id = $(this).attr("mongo-id");
+
+        $.get(`http://localhost:3000/todo/${id}`, function (data) {
+          $("#editTitle").val(data.title);
+          $("#editComplete").val();
+          $("#editFormModal").modal("show");
         });
       });
 
@@ -192,7 +193,7 @@
               <tr>
                 <td>${index + 1}</td>
                 <td>${element.title}</td>
-                <td>${element.complete ? "sudah" : "belum"}</td>
+                <td>${element.complete ? "done" : "not done"}</td>
                 <td>
                   <button class="btn btn-success edit-btn" mongo-id="${
                     element._id
@@ -219,7 +220,6 @@
         });
       };
 
-
       $("#list").on("click", ".delete-btn", function () {
         const id = $(this).attr("mongo-id");
         $.ajax({
@@ -235,13 +235,6 @@
             alert("Request failed: " + textStatus);
           });
       });
-
-      $("#list").on("click", ".edit-btn", function () {
-        $("#editFormModal").modal("show");
-      
-      });
-
-      
     </script>
   </body>
 </html>
