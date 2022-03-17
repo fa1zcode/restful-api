@@ -19,7 +19,6 @@
       crossorigin="anonymous"
     ></script>
 
-
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
 
@@ -152,7 +151,7 @@
     <script>
       $(document).ready(function () {
         loadData(); //show all data
-        // setInterval(loadData, 1000);
+        setInterval(loadData, 1000);
 
         $("#add-btn").click(function () {
           //show formModal when clicking add button
@@ -178,6 +177,26 @@
           $("#editTitle").val(data.title);
           $("#editComplete").val();
           $("#editFormModal").modal("show");
+
+          $("#edit-todo").submit(function (event) {
+            $.ajax({
+              url: `http://localhost:3000/todo/${id}`,
+              method: "PUT",
+              dataType: "json",
+              data: {
+                _id: id,
+                title: $("#editTitle").val(),
+                complete: $("#editComplete").val(),
+              },
+            })
+              .done(function (result) {
+                console.log(result);
+                loadData();
+              })
+              .fail(function (jqXHR, textStatus) {
+                alert("Request failed: " + textStatus);
+              });
+          });
         });
       });
 
