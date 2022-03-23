@@ -19,10 +19,13 @@
       crossorigin="anonymous"
     ></script>
 
+    <script src="/javascripts/util.js"></script>
+
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
 
   <body>
+    <button type="button" class="btn btn-danger" onclick="logout()">logout</button>
     <h1>DATA TODO</h1>
     <!--Start table item -->
     <table class="table table-striped" id="list">
@@ -220,10 +223,12 @@
           url: "http://localhost:3000/todo",
           method: "GET",
           dataType: "json",
+          headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
         }).done(function (result) {
-          let html = "";
-          result.forEach((element, index) => {
-            html += `
+          if (result.success) {
+            let html = "";
+            result.data.forEach((element, index) => {
+              html += `
               <tr>
                 <td>${index + 1}</td>
                 <td>${element.title}</td>
@@ -238,8 +243,11 @@
                 </td>
               </tr>
             `;
-          });
-          $("table tbody").html(html);
+            });
+            $("table tbody").html(html);
+          } else {
+            window.location = '/login.html'
+          }
         });
       };
 
@@ -249,6 +257,7 @@
           method: "POST",
           dataType: "json",
           data: value,
+          headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` },
         }).done(function (result) {
           loadData();
         });
