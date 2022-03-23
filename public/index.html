@@ -153,6 +153,11 @@
         loadData(); //show all data
         // setInterval(loadData, 1000);
 
+        $("#add-btn").click(function () {
+          //show formModal when clicking add button
+          $("#formModal").modal("show");
+        });
+
         $("#form-todo").submit(function (event) {
           event.preventDefault();
           const value = $(this).serializeArray(); // jquery get value from form-todo
@@ -163,39 +168,50 @@
           addData(params);
           $("#formModal").modal("hide");
         });
-      });
 
-      $("#add-btn").click(function () {
-        //show formModal when clicking add button
-        $("#formModal").modal("show");
-      });
+        $("#list").on("click", ".edit-btn", function () {
+          const id = $(this).attr("mongo-id");
 
-      $("#list").on("click", ".edit-btn", function () {
-        const id = $(this).attr("mongo-id");
+          $.get(`http://localhost:3000/todo/${id}`, function (data) {
+            $("#editTitle").val(data.title);
+            $("#editComplete").find("option :selected").text();
+            $("#editFormModal").modal("show");
 
-        $.get(`http://localhost:3000/todo/${id}`, function (data) {
-          $("#editTitle").val(data.title);
-          $("#editComplete").find("option :selected").text();
-          $("#editFormModal").modal("show");
-
-          $("#edit-todo").submit(function (event) {
-            $.ajax({
-              url: `http://localhost:3000/todo/${id}`,
-              method: "PUT",
-              dataType: "json",
-              data: {
-                _id: id,
-                title: $("#editTitle").val(),
-                complete: $("#editComplete").val(),
-              },
-            })
-              .done(function (result) {
-                loadData();
+            $("#edit-todo").submit(function (event) {
+              $.ajax({
+                url: `http://localhost:3000/todo/${id}`,
+                method: "PUT",
+                dataType: "json",
+                data: {
+                  _id: id,
+                  title: $("#editTitle").val(),
+                  complete: $("#editComplete").val(),
+                },
               })
-              .fail(function (jqXHR, textStatus) {
-                alert("Request failed: " + textStatus);
-              });
+                .done(function (result) {
+                  loadData();
+                })
+                .fail(function (jqXHR, textStatus) {
+                  alert("Request failed: " + textStatus);
+                });
+            });
           });
+        });
+
+        $("#list").on("click", ".delete-btn", function () {
+          const id = $(this).attr("mongo-id");
+          $.ajax({
+            url: `http://localhost:3000/todo/${id}`,
+            method: "DELETE",
+            dataType: "json",
+          })
+            .done(function (result) {
+              // console.log(result);
+              loadData();
+            })
+            .fail(function (jqXHR, textStatus) {
+              alert("Request failed: " + textStatus);
+            });
         });
       });
 
@@ -237,22 +253,6 @@
           loadData();
         });
       };
-
-      $("#list").on("click", ".delete-btn", function () {
-        const id = $(this).attr("mongo-id");
-        $.ajax({
-          url: `http://localhost:3000/todo/${id}`,
-          method: "DELETE",
-          dataType: "json",
-        })
-          .done(function (result) {
-            console.log(result);
-            loadData();
-          })
-          .fail(function (jqXHR, textStatus) {
-            alert("Request failed: " + textStatus);
-          });
-      });
     </script>
   </body>
 </html>

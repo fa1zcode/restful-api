@@ -2,6 +2,7 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+const cors = require("cors")  //npm install cors to enable communication between localhost:3000 and localhost:3001
 
 const { MongoClient } = require("mongodb");
 // or as an es module:
@@ -20,7 +21,7 @@ async function main() {
   console.log("Connected successfully to server");
   const db = client.db(dbName);
   
-  var indexRouter = require("./routes/index");
+  var indexRouter = require("./routes/index")(db);
   var todoRouter = require("./routes/todo")(db);
 
   var app = express();
@@ -30,6 +31,7 @@ async function main() {
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, "public")));
+  app.use(cors())
 
   app.use("/", indexRouter);
   app.use("/todo", todoRouter);
