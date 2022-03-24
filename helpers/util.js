@@ -4,6 +4,7 @@ const secretKey = "rubicamp";
 module.exports = {
   isAuthenticated: (req, res, next) => {
     try {
+      //console.log(req.get("Authorization"))
       if (req.get("Authorization") && req.get("Authorization").split(" ")[1]) {
         const token = req.get("Authorization").split(" ")[1];
         var user = jwt.verify(token, secretKey);
